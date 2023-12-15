@@ -1,0 +1,32 @@
+# Path: .github/workflows/job1.yml
+name: FirstWorkflow
+on: [push]
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    env:
+      MY_VAR: "Hello Microsofty!"
+    steps:
+      - name: step 1
+        run: echo "Step 1 complete"
+      - name: step 2
+        run: echo "Step 2 complete"
+      - name: Set output
+        id: vars
+        run: echo "::set-output name=my_var::${{ env.MY_VAR }}"
+    outputs:
+      my_var: ${{ steps.vars.outputs.my_var }}
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
+    env:
+      MY_VAR: ${{ needs.job1.outputs.my_var }}
+    steps:
+      - name: step 1
+        uses: actions/checkout@v2
+      - name: step 2
+        uses: mscoutermarsh/cowsays-action@master
+        with:
+          command: cowsay
+          arguments: ${{ env.MY_VAR }}
+          color: magenta
